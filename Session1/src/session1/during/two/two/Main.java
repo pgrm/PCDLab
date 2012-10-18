@@ -1,6 +1,5 @@
-package session1.during.two.one;
+package session1.during.two.two;
 
-import session1.during.two.CountSynchronizer;
 import session1.during.two.GlobalMain;
 import session1.during.two.IdentifiedRunnable;
 import session1.during.two.ThreadSynchronizer;
@@ -15,7 +14,7 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class Main implements GlobalMain.RunnableProvider<IdentifiedRunnable> {
-    private ThreadSynchronizer<IdentifiedRunnable> synchronizer = new CountSynchronizer<IdentifiedRunnable>(100);
+    private ThreadSynchronizer<IdentifiedRunnable> synchronizer = new OrderedSynchronizer(100, 4);
     
     public static void main(String [] args) throws IOException {
         Main configuration = new Main();

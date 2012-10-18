@@ -1,8 +1,10 @@
-package session1.during.one;
+package session1.after.two;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: Peter Date: 04.10.12 Time: 17:17 To change
@@ -10,21 +12,29 @@ import java.io.InputStreamReader;
  */
 public class Main {
 	private final int maxElements = 100;
-	private final double[] consumerSleeps = new double[] { 0.5, 0.7, 0.2 };
-	private final double[] producerSleeps = new double[] { 0.2, 1, 1.5 };
+	private final double[] consumerSleeps = new double[] { 0.5, 0.3, 0.3 };
+	private final double[] producerSleeps = new double[] { 0.2, 0.4, 0.6 };
 
-	private VisualizedStack<String> stack;
+	private List<VisualizedStack<String>> consumerStacks = new ArrayList<VisualizedStack<String>>();
+	private List<VisualizedStack<String>> producerStacks = new ArrayList<VisualizedStack<String>>();
 
 	public static void main(String[] args) throws IOException {
-		VisualizedStack<String> stack = new ConsoleVisualizedStack<String>();
-
-		Main mainProgram = new Main(stack);
+		Main mainProgram = new Main();
 
 		mainProgram.run();
 	}
 
-	public Main(VisualizedStack<String> stack) {
-		this.stack = stack;
+	public Main() {
+		VisualizedStack<String> stackX = new ConsoleVisualizedStack<String>("X");
+		VisualizedStack<String> stackY = new ConsoleVisualizedStack<String>("Y");
+
+		consumerStacks.add(stackX);
+		consumerStacks.add(stackX);
+		consumerStacks.add(stackY);
+
+		producerStacks.add(stackX);
+		producerStacks.add(stackY);
+		producerStacks.add(stackY);
 	}
 
 	public void run() throws IOException {
@@ -43,7 +53,8 @@ public class Main {
 	private void InitializeProducers(Thread[] threads,
 			Stopable[] threadsContet, int startIndex) {
 		for (int i = startIndex; i < producerSleeps.length; i++) {
-			Producer p = new Producer(stack, producerSleeps[i], maxElements);
+			Producer p = new Producer(producerStacks.get(i), producerSleeps[i],
+					maxElements);
 
 			threadsContet[i + startIndex] = p;
 			threads[i + startIndex] = new Thread(p);
@@ -53,8 +64,8 @@ public class Main {
 	private void InitializeConsumers(Thread[] threads,
 			Stopable[] threadsContent, int startIndex) {
 		for (int i = 0; i < consumerSleeps.length; i++) {
-			Consumer c = new Consumer(stack, consumerSleeps[i]);
-			
+			Consumer c = new Consumer(consumerStacks.get(i), consumerSleeps[i]);
+
 			threadsContent[i + startIndex] = c;
 			threads[i + startIndex] = new Thread(c);
 		}

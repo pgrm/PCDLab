@@ -1,4 +1,4 @@
-package session1.during.one;
+package session1.after.three;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +10,11 @@ import java.io.InputStreamReader;
  */
 public class Main {
 	private final int maxElements = 100;
-	private final double[] consumerSleeps = new double[] { 0.5, 0.7, 0.2 };
+	private final double[] consumerSleeps = new double[] { 0.5, 0.7, 0.3 };
+	private final double[] hybridSleeps = new double[] { 0.1, 0.6, 1.1 };
 	private final double[] producerSleeps = new double[] { 0.2, 1, 1.5 };
+
+	private final int[] hybridsMaxElementsProduce = new int[] { 2, 10, 20 };
 
 	private VisualizedStack<String> stack;
 
@@ -29,15 +32,17 @@ public class Main {
 
 	public void run() throws IOException {
 		Thread[] threads = new Thread[consumerSleeps.length
-				+ producerSleeps.length];
+				+ producerSleeps.length + hybridSleeps.length];
 		Stopable[] threadsContent = new Stopable[threads.length];
 
 		InitializeProducers(threads, threadsContent, 0);
 		InitializeConsumers(threads, threadsContent, producerSleeps.length);
+		InitializeHybrids(threads, threadsContent, producerSleeps.length
+				+ consumerSleeps.length);
 		StartThreads(threads);
 
 		waitForLineInput();
-		StopThreads(threadsContent);
+		StopThreads(threadsContent);	
 	}
 
 	private void InitializeProducers(Thread[] threads,
@@ -54,9 +59,20 @@ public class Main {
 			Stopable[] threadsContent, int startIndex) {
 		for (int i = 0; i < consumerSleeps.length; i++) {
 			Consumer c = new Consumer(stack, consumerSleeps[i]);
-			
+
 			threadsContent[i + startIndex] = c;
 			threads[i + startIndex] = new Thread(c);
+		}
+	}
+
+	private void InitializeHybrids(Thread[] threads, Stopable[] threadsContent,
+			int startIndex) {
+		for (int i = 0; i < hybridSleeps.length; i++) {
+			Hybrid h = new Hybrid(stack, consumerSleeps[i],
+					hybridsMaxElementsProduce[i], maxElements);
+
+			threadsContent[i + startIndex] = h;
+			threads[i + startIndex] = new Thread(h);
 		}
 	}
 

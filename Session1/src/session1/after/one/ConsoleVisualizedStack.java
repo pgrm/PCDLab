@@ -1,4 +1,4 @@
-package session1.during.one;
+package session1.after.one;
 
 /**
  * Created with IntelliJ IDEA.

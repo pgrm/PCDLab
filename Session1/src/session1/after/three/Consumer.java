@@ -1,4 +1,4 @@
-package session1.during.one;
+package session1.after.three;
 
 import java.util.Random;
 import java.util.Stack;
@@ -10,25 +10,23 @@ import java.util.Stack;
  * Time: 17:36
  * To change this template use File | Settings | File Templates.
  */
-public class Producer implements Runnable, Stopable {
-    private Stack<String> stackToProduceTo;
+public class Consumer implements Runnable, Stopable {
+    private Stack<String> stackToConsumeFrom;
     private Random randomTimer = new Random();
     private int maxMilliSecondsSleep;
-    private int maxValuesToProduce;
     private boolean notInterrupted = true;
 
-    public Producer(Stack<String> stackToProduceTo, double maxSecondsSleep, int maxValuesToProduce) {
-        this.stackToProduceTo = stackToProduceTo;
-        this.maxMilliSecondsSleep = (int)(maxSecondsSleep * 1000);
-        this.maxValuesToProduce = maxValuesToProduce;
+    public Consumer(Stack<String> stackToConsumeFrom, double maxSecondsSleep) {
+        this.stackToConsumeFrom = stackToConsumeFrom;
+        this.maxMilliSecondsSleep =  (int)(maxSecondsSleep * 1000);
     }
 
     @Override
     public void run() {
-        System.out.println("Producer is starting...");
+        System.out.println("Consumer is starting...");
 
         while (notInterrupted) {
-            produce();
+            consume();
 
             try {
                 Thread.sleep(randomSleepTime());
@@ -37,25 +35,26 @@ public class Producer implements Runnable, Stopable {
             }
         }
 
-        System.out.println("Producer is stopping ...");
+        System.out.println("Consumer is stopping ...");
     }
 
     public void stop() {
         notInterrupted = false;
     }
 
-    private void produce() {
-    	synchronized (stackToProduceTo) {
-    		if (stackToProduceTo.size() >= maxValuesToProduce) {
+    private void consume() {
+    	synchronized (stackToConsumeFrom) {
+    		if (stackToConsumeFrom.isEmpty()) {
 				try {
-					stackToProduceTo.wait();
+					stackToConsumeFrom.wait();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+    		} else { 
+    			stackToConsumeFrom.pop();
+    			stackToConsumeFrom.notifyAll();
     		}
-    		stackToProduceTo.push("Item");
-    		stackToProduceTo.notifyAll();
 		}
     }
 

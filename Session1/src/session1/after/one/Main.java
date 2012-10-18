@@ -1,4 +1,4 @@
-package session1.during.one;
+package session1.after.one;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +10,10 @@ import java.io.InputStreamReader;
  */
 public class Main {
 	private final int maxElements = 100;
-	private final double[] consumerSleeps = new double[] { 0.5, 0.7, 0.2 };
-	private final double[] producerSleeps = new double[] { 0.2, 1, 1.5 };
+	private final double[] consumerSleeps = new double[] { 0.5, 0.7, 2 };
+	private final int[] consumersConsume = new int[] { 4, 8, 22 };
+	private final double[] producerSleeps = new double[] { 0.1, 1, 1.5 };
+	private final int[] producersProduce = new int[] { 1, 11, 18 };
 
 	private VisualizedStack<String> stack;
 
@@ -43,7 +45,8 @@ public class Main {
 	private void InitializeProducers(Thread[] threads,
 			Stopable[] threadsContet, int startIndex) {
 		for (int i = startIndex; i < producerSleeps.length; i++) {
-			Producer p = new Producer(stack, producerSleeps[i], maxElements);
+			Producer p = new Producer(stack, producerSleeps[i],
+					producersProduce[i], maxElements);
 
 			threadsContet[i + startIndex] = p;
 			threads[i + startIndex] = new Thread(p);
@@ -51,11 +54,12 @@ public class Main {
 	}
 
 	private void InitializeConsumers(Thread[] threads,
-			Stopable[] threadsContent, int startIndex) {
+			Stopable[] threadsContet, int startIndex) {
 		for (int i = 0; i < consumerSleeps.length; i++) {
-			Consumer c = new Consumer(stack, consumerSleeps[i]);
+			Consumer c = new Consumer(stack, consumerSleeps[i],
+					consumersConsume[i]);
 			
-			threadsContent[i + startIndex] = c;
+			threadsContet[i + startIndex] = c;
 			threads[i + startIndex] = new Thread(c);
 		}
 	}

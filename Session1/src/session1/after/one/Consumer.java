@@ -1,4 +1,4 @@
-package session1.during.one;
+package session1.after.one;
 
 import java.util.Random;
 import java.util.Stack;
@@ -14,10 +14,12 @@ public class Consumer implements Runnable, Stopable {
     private Stack<String> stackToConsumeFrom;
     private Random randomTimer = new Random();
     private int maxMilliSecondsSleep;
+    private int maxElementsToConsumeAtOnce;
     private boolean notInterrupted = true;
 
-    public Consumer(Stack<String> stackToConsumeFrom, double maxSecondsSleep) {
+    public Consumer(Stack<String> stackToConsumeFrom, double maxSecondsSleep, int maxElementsToConsumeAtOnce) {
         this.stackToConsumeFrom = stackToConsumeFrom;
+        this.maxElementsToConsumeAtOnce = maxElementsToConsumeAtOnce;
         this.maxMilliSecondsSleep =  (int)(maxSecondsSleep * 1000);
     }
 
@@ -26,7 +28,7 @@ public class Consumer implements Runnable, Stopable {
         System.out.println("Consumer is starting...");
 
         while (notInterrupted) {
-            consume();
+            consumeAllElements();
 
             try {
                 Thread.sleep(randomSleepTime());
@@ -42,23 +44,38 @@ public class Consumer implements Runnable, Stopable {
         notInterrupted = false;
     }
 
-    private void consume() {
+    private void consumeAllElements() {
     	synchronized (stackToConsumeFrom) {
-    		if (stackToConsumeFrom.isEmpty()) {
-				try {
-					stackToConsumeFrom.wait();
+    		for (int i = 0; i < randomElementsToConsume(); i++) {
+    			try {
+					consumeElement(i);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-    		} else { 
-    			stackToConsumeFrom.pop();
+    		}
+    		stackToConsumeFrom.notifyAll();
+		}
+    }
+    
+    private void consumeElement(int elementIndex) throws InterruptedException {
+		// if more consumers are running, a while is needed, 
+		// since it can be that another consumer has been woken up before this one, 
+		// and the stack is empty again.
+    	while (stackToConsumeFrom.isEmpty()) {
+    		if (elementIndex > 0) {
     			stackToConsumeFrom.notifyAll();
     		}
-		}
+    		stackToConsumeFrom.wait();
+    	}
+    	stackToConsumeFrom.pop();
     }
 
     private long randomSleepTime() {
         return (long)(randomTimer.nextDouble() * maxMilliSecondsSleep);
     }
+    
+	private int randomElementsToConsume() {
+		return (int) (randomTimer.nextDouble() * (double)maxElementsToConsumeAtOnce);
+	}
 }

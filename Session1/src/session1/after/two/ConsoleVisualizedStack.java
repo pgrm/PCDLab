@@ -1,4 +1,4 @@
-package session1.during.one;
+package session1.after.two;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,12 +13,18 @@ public class ConsoleVisualizedStack<E> extends VisualizedStack<E> {
 	 */
 	private static final long serialVersionUID = -7510270602620906062L;
 
+	private String displayItem;
+	
+	public ConsoleVisualizedStack(String displayItem) {
+		this.displayItem = displayItem;
+	}
+	
 	@Override
     protected void updateVisualization() {
         System.out.print("[");
 
         for (int i = 0; i < size(); i++) {
-            System.out.print("X");
+            System.out.print(displayItem);
         }
 
         System.out.println("]");
