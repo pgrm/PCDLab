@@ -1,4 +1,4 @@
-package session1.during.two;
+package session1.during.two.one;
 
 import session1.during.one.ConsoleVisualizedStack;
 import session1.during.one.Consumer;

@@ -8,3 +8,12 @@
 # IntelliJ files #
 *.idea
 *.iml
+
+# eclipse
+.metadata/
+.classpath
+.project
+
+#eclipse - erlide
+erlide.log
+*.dump
