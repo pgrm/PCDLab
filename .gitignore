@@ -15,5 +15,5 @@
 .project
 
 #eclipse - erlide
-erlide.log
+erlide.log*
 *.dump
