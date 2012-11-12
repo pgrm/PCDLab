@@ -17,3 +17,9 @@
 #eclipse - erlide
 erlide.log*
 *.dump
+/Session1/nbproject/private/
+/Session2/nbproject/private/
+/Session0/nbproject/private/
+/Session2/build/
+
+nbproject
