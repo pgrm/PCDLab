@@ -1,0 +1,76 @@
+//LIGHT initially Off.
+LIGHT = (turnOn->turnOff->LIGHT).
+
+DOOR =(roomIn->roomOut->DOOR).
+
+PRISONER =
+    (room.roomIn->
+        (room.turnOn->room.roomOut->AT_LEAST_ONCE
+        |room.turnOff->room.turnOn->room.roomOut->PRISONER)
+    ),
+AT_LEAST_ONCE=
+    (room.roomIn->room.roomOut->AT_LEAST_ONCE).
+
+
+// N number of prisoners minus 1
+//In this case we have 13 prisoners: Alice plus 12 prisoners
+const N=12
+range T=1..N
+ALICE=ALICE[1],
+ALICE[u:T]=
+    (room.roomIn->
+        (room.turnOn->room.turnOff->room.roomOut->ALICE[u] 
+        |room.turnOff->
+            (when(u<N) room.roomOut->ALICE[u+1]
+            |when(u==N) room.freeAll[u+1]->room.roomOut->STOP)
+        )
+    ).
+
+range R=1..N
+
+||ROOM=(LIGHT||DOOR).
+
+||PRISON=(p[i:R]:PRISONER||a:ALICE||{a,p[i:R]}::room:ROOM).
+
+///////////////////////////////////////////////////
+//////// Initial state of light can change ////////
+///////////////////////////////////////////////////
+
+//LIGHT initially Off.
+LIGHT = (turnOff->turnOn->LIGHT).
+
+DOOR =(roomIn->roomOut->DOOR).
+
+PRISONER =
+    (room.roomIn->
+        (room.turnOn->room.roomOut->SECOND_TIME
+        |room.turnOff->room.turnOn->room.roomOut->PRISONER)
+    ),
+SECOND_TIME =
+    (room.roomIn->
+        (room.turnOn->room.roomOut->FINISHED
+        |room.turnOff->room.turnOn->room.roomOut->SECOND_TIME)
+    ),
+FINISHED=
+    (room.roomIn->room.roomOut->FINISHED).
+
+
+// N number of prisoners minus 1
+//In this case we have 7 prisoners: Alice plus 6 prisoners
+const N=6
+range T=1..N*2
+ALICE=ALICE[1],
+ALICE[u:T]=
+    (room.roomIn->
+        (room.turnOn->room.turnOff->room.roomOut->ALICE[u] 
+        |room.turnOff->
+            (when(u<(N*2)) room.roomOut->ALICE[u+1]
+            |when(u==(N*2)) room.freeAll[(u/2)+1]->room.roomOut->STOP)
+        )
+    ).
+
+range R=1..N
+
+||ROOM=(LIGHT||DOOR).
+
+||PRISON=(p[i:R]:PRISONER||a:ALICE||{a,p[i:R]}::room:ROOM).
